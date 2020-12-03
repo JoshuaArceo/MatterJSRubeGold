@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="//cdn.jsdelivr.net/npm/phaser@3.24.1/dist/phaser.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/phaser@3.24.1/dist/phaser-matter-collision-plugin"></script>
+
+</head>
+<body>
+<script>
+    var config = {
+        type: Phaser.AUTO,
+        width: innerWidth,
+        height: innerHeight,
+        physics: {
+            default: 'matter',
+            matter: {
+                enableSleeping: true,
+                gravity: {
+                    y: 1
+                },
+                debug: {
+                    showBody: true,
+                    showStaticBody: true
+                }
+            }
+        },
+
+        scene: {
+            preload: preload,
+            create: create,
+        }
+    };
+
+    let units = innerWidth/2560;
+
+    var game = new Phaser.Game(config);
+
+    function preload ()
+    {
+        this.load.image('block','resources/marble.png')
+    }
+    function create ()
+    {
+        //essentials
+        this.matter.add.mouseSpring();
+
+
+        //floors
+        let ground = this.matter.add.rectangle(1100*units,550*units,420*units,20*units,{ isStatic: true});
+        let rSide = this.matter.add.rectangle(1500*units,300*units,20*units,700*units,{ isStatic: true});
+        let lSide = this.matter.add.rectangle(850*units,900*units,20*units,700*units,{ isStatic: true});
+        let bSide = this.matter.add.rectangle(1200*units,675*units,500*units,20*units,{ isStatic: true});
+        var Body = this.matter.body;
+        Body.rotate(rSide,-3);
+        Body.rotate(lSide,-3);
+        Body.rotate(bSide,3);
+
+
+        var cBall = this.matter.add.image(300*units,660*units,'block').setBounce(.5).setFriction(0);
+        var eBall = this.matter.add.image(1200*units,900*units,'block').setBounce(.5).setFriction(0);
+        var zBall = this.matter.add.image(1200*units,900*units).setBounce(.5).setFriction(0);
+        var ball = this.matter.add.image(300*units,600*units,'block').setBounce(.5).setFriction(0);
+        ball.setScale(0.03,0.03)
+        cBall.setScale(0.03,0.03)
+        zBall.setScale(0.03,0.03)
+        eBall.setScale(0.03,0.03)
+        // ball1.setVelocityX(5);
+        this.matter.add.rectangle(100,550,420,20,{ isStatic: true});
+
+        //slings
+        let dot = this.matter.add.rectangle(300*units,600*units,1,1,{ isStatic: true});
+        let sling = this.matter.add.constraint(ball,dot,0,0.05);
+
+    }
+
+    this.matter.world.on('collisionstart',function (event, bodyA, bodyB){
+
+        bodyA.gameObject.setTint(0xff0000);
+        bodyB.gameObject.setTint(0x00ff00);
+
+    });
+</script>
+</body>
+</html>
