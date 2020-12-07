@@ -1,47 +1,94 @@
 var config = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
-    physics: {
-        default: 'arcade',
-        arcade: {
-            gravity: { y: 200 }
-        }
-    },
+    width: 1200,
+    height: 960,
+    parent: 'game',
+    backgroundColor:'grey',
     scene: {
         preload: preload,
-        create: create
+        create: create,
+        update: update,
+    },
+    physics: {
+        default: "matter",
+        matter: {
+            gravity:{
+                x: 0,
+                y:5
+            },
+            debug: true
+        }
     }
 };
 
+
 var game = new Phaser.Game(config);
+var inps;
+var ball;
+var timer;
 
-function preload ()
-{
-    this.load.setBaseURL('http://labs.phaser.io');
+function preload() {
+    this.load.image('ball','resources/sprites/ball.png');
 
-    this.load.image('sky', 'assets/skies/space3.png');
-    this.load.image('logo', 'assets/sprites/phaser3-logo.png');
-    this.load.image('red', 'assets/particles/red.png');
+    // this.load.json('ballS','resources/sprite_data/ball.json');
 }
 
-function create ()
-{
-    this.add.image(400, 300, 'sky');
+var zoomN = .5;
 
-    var particles = this.add.particles('red');
+function zoom() {
+    // console.log(zoomN);
+    if (zoomN <= 1.5) {
+        zoomN += .01;
+    } else {
+        timer.paused = true;
+    }
+}
 
-    var emitter = particles.createEmitter({
-        speed: 100,
-        scale: { start: 1, end: 0 },
-        blendMode: 'ADD'
+function create() {
+
+    timer = this.time.addEvent({
+        delay: 10,
+        callback: zoom,
+        loop: true
     });
 
-    var logo = this.physics.add.image(400, 100, 'logo');
+    this.matter.world.setBounds(0, 0, 10000, 10000, 32, true, true, false, true);
 
-    logo.setVelocity(100, 200);
-    logo.setBounce(1, 1);
-    logo.setCollideWorldBounds(true);
 
-    emitter.startFollow(logo);
+    this.cameras.main.setBounds(0, -100);
+
+    inps = this.input.keyboard.createCursorKeys();
+
+    ball = this.matter.add.image(200, 100, 'ball');
+    ball.setCircle();
+    ball.setScale(.5);
+    ball.setFriction(0.005);
+    ball.setBounce(0.6);
+    ball.setVelocityX(1);
+    ball.setAngularVelocity(0.15);
+
+    this.cameras.main.startFollow(ball, true);
+
+
+    var ramp = this.matter.add.rectangle(0,200,600,10, {angle:'0', isStatic:true,});
+
 }
+
+function update() {
+    // console.log("zoomN");
+    this.cameras.main.setZoom(zoomN);
+    if (inps.up.isDown){
+        this.cameras.main.startFollow(ball, true);
+        if(zoomN<1.5){
+            zoomN+=.01;
+        }
+    }
+    if (inps.down.isDown){
+        this.cameras.main.startFollow(ball, false);
+        if(zoomN>.25){
+            zoomN-=.01;
+        }
+    }
+}
+
+
