@@ -3,7 +3,7 @@ var config = {
     width: 1200,
     height: 900,
     parent: 'game',
-    backgroundColor:'grey',
+    backgroundColor:'#2143ff',
     scene: {
         preload: preload,
         create: create,
@@ -16,7 +16,7 @@ var config = {
                 x: 0,
                 y:5
             },
-            debug: true
+            // debug: true
         }
     }
 };
@@ -133,29 +133,27 @@ function create() {
 
     this.matter.add.image(scaleU*-80+xShift,scaleU*990+yShift, 'stoneLong', null, {angle:'0', isStatic:true,});
 
-    //TODO
-    //catapult/launch
+    //TODO catapult/launch
+    //https://github.com/liabru/matter-js/blob/master/examples/catapult.js
 
-    //TODO
-    //drop to gear
 
-    //TODO
-    //gear
 
-    //TODO
-    //ramp to pulley
+    //TODO drop to gear? //TODO gear?
+    //spinning circle with rectangles attached???
 
-    //TODO
-    //pulley
 
-    //TODO
-    //end
+    //TODO ramp to pulley//TODO pulley
+    //chain with plat attached, weight pulls down won sensor activation
+    //https://github.com/liabru/matter-js/blob/master/examples/chains.js
+
+
+    //TODO end
     //ONLY TEMP
-  this.matter.add.image(scaleU*100+xShift,scaleU*1400+yShift, 'blueP', null, {isStatic:true, isSensor:true}).setScale(.25);
+  this.matter.add.image(scaleU*100+xShift,scaleU*1400+yShift, 'blueP', null, {isStatic:true, isSensor:true, label:"portal"}).setScale(.25);
 
 
 
-    this.matter.world.on("collisionstart", (event, bodyA, bodyB, bodyC) => {
+    this.matter.world.on("collisionstart", (event, bodyA, bodyB) => {
         console.log(bodyA.label + ", " + bodyB.label);
         if((bodyA.label == "Circle Body" && bodyB.label == "detectionOne") || (bodyB.label == "detectionOne" && bodyA.label == "Circle Body")) {
 
@@ -185,6 +183,9 @@ function create() {
             killMe.destroy();
             dominoes[0].setVelocityX(-10);
             ball.setAngularVelocity(-1);
+        }
+        if((bodyA.label == "Circle Body" && bodyB.label == "portal") || (bodyB.label == "portal" && bodyA.label == "Circle Body")) {
+            //TODO portal tp to next point/map
         }
     });
 
