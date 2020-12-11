@@ -129,14 +129,14 @@ function create() {
     dominoes.push(this.matter.add.image(scaleU*-45+xShift,scaleU*945+yShift, 'domino',null, {label:"domino"}).setMass(3));
     dominoes.push(this.matter.add.image(scaleU*-90+xShift,scaleU*945+yShift, 'domino',null, {label:"domino"}).setMass(3));
 
-
-
     this.matter.add.image(scaleU*-80+xShift,scaleU*990+yShift, 'stoneLong', null, {angle:'0', isStatic:true,});
 
     //TODO catapult/launch
     //https://github.com/liabru/matter-js/blob/master/examples/catapult.js
 
 
+    var cataplult = this.matter.add.image(scaleU*165+xShift, scaleU*1100+yShift, 'stoneLong', null, { isStatic: true,  label:"cata" });
+    var anch = this.matter.add.image(scaleU*165+xShift, scaleU*1200+yShift, 'stoneV', null, {angle: '1.5708', isStatic: true,});
 
     //TODO drop to gear? //TODO gear?
     //spinning circle with rectangles attached???
@@ -167,6 +167,8 @@ function create() {
             this.matter.world.setGravity(0,-6);
         }
         if((bodyA.label == "Circle Body" && bodyB.label == "gravDown") || (bodyB.label == "gravDown" && bodyA.label == "Circle Body")) {
+            // console.log("jeet");
+
             this.matter.world.setGravity(0,7);
             for (i = 0; i<dominoes.length; i++){
                 dominoes[i].setIgnoreGravity(false);
@@ -175,6 +177,7 @@ function create() {
         }
         if((bodyA.label == "Circle Body" && bodyB.label == "ballVL") || (bodyB.label == "ballVL" && bodyA.label == "Circle Body")) {
             // ball.setVelocityX(-11.5);
+            // ball.y = 2314;
             zoom(false,true);
             console.log("trigger");
         }
@@ -186,6 +189,12 @@ function create() {
         }
         if((bodyA.label == "Circle Body" && bodyB.label == "portal") || (bodyB.label == "portal" && bodyA.label == "Circle Body")) {
             //TODO portal tp to next point/map
+            // ball.setPosition(12,43);
+            //@deprecated
+            // this.cameras.main.stopFollow();
+            // ball.destroy();
+            // ball = this.matter.add.image(scaleU*100+xShift, scaleU*100+yShift, 'ball');
+
         }
     });
 
@@ -256,9 +265,10 @@ function update() {
         }
     }
     if(inpsM.isDown) {
-        console.log('X:' + inpsM.x);
+        console.log(ball.x);
+        // console.log('X:' + inpsM.x);
 
-        console.log('Y:' + inpsM.y);
+        // console.log('Y:' + inpsM.y);
     }
 }
 
