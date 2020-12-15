@@ -1,6 +1,6 @@
 var config = {
     type: Phaser.AUTO,
-    width: 5000,
+    width: 1000,
     height: 900,
     parent: 'game',
     backgroundColor:'#2143ff',
@@ -12,7 +12,7 @@ var config = {
     physics: {
         default: "matter",
         matter: {
-            enableSleeping: true,
+            // enableSleeping: true,
             gravity:{
                 x: 0,
                 y:5
@@ -63,6 +63,8 @@ function preload() {
 
     //Ryan
     this.load.image('blockR','Ryan/resources/marble.png');
+    this.load.image('g','Ryan/resources/green.png');
+    this.load.image('r','Ryan/resources/red.png');
 
     //Kaustubha
     this.load.image('blockK', 'Kaustubha/resources/block.png');
@@ -75,7 +77,7 @@ function preload() {
 
 var lBall;
 var plat3=this.matter;
-
+var stayStill =[];
 function create() {
     // kFreeze();
     // this.matter.world.engine.timing.timeScale = .9;
@@ -93,19 +95,19 @@ function create() {
     zoomOutTimer = this.time.addEvent({
         delay: 10,
         callback: zoom,
-        args: [false, false, cCap],
+        args: [false, true, cCap],
         loop: true
     });
 ;
     zoomOutTimer.paused=true;
 
-    this.matter.world.setBounds(0, 0, 1200, 1800, 32, true, true, false, true);
+    this.matter.world.setBounds(0, 0, 6000, 1800, 32, true, true, false, true);
 
     // this.matter.world.setGravity(0,9.8);
     // this.matter.world.getGravityY();
     // console.log("grav " + this.matter.setGravityY());
 
-    this.cameras.main.setBounds(0, -100);
+    this.cameras.main.setBounds(0, 100);
 
 
     ballJ = this.matter.add.image(1+xShift, yShift, 'ballJ');
@@ -127,6 +129,7 @@ function create() {
     this.matter.add.rectangle(30+xShift,1150+yShift,20,50,{isStatic:true, isSensor:true, label:"weightDrop"});
     this.matter.add.rectangle(640+kXShift,380+kYShift,100,200,{isStatic:true, isSensor:true, label:"unlockBlockC"});
     this.matter.add.rectangle(1100+kXShift,460+kYShift,20,50,{isStatic:true, isSensor:true, label:"unlockBlockD"});
+    this.matter.add.rectangle(640*units+rXShift,900*units,500, 20,{isStatic:true, isSensor:true, label:"pballCam"});
     //plats
 
     //starting ramps
@@ -194,12 +197,13 @@ function create() {
 
     //end
     this.matter.add.image(500+xShift,1400+yShift, 'blueP', null, {isStatic:true, isSensor:true, label:"portal"}).setScale(.25);
-
+    var camC = 0;
+    // var porC =0;
     this.matter.world.on("collisionstart", (event, bodyA, bodyB) => {
-        // console.log(bodyA.label + ", " + bodyB.label);
+        console.log(bodyA.label + ", " + bodyB.label);
         if((bodyA.label === "Circle Body" && bodyB.label === "detectionOne") || (bodyB.label === "detectionOne" && bodyA.label === "Circle Body")) {
 
-            // zoom(false,true);
+            zoom(false,true);
         }
         if((bodyA.label === "Circle Body" && bodyB.label === "gravUp") || (bodyB.label === "gravUp" && bodyA.label === "Circle Body")) {
             //J
@@ -211,21 +215,7 @@ function create() {
 
             // console.log(dot);
 
-            sling.ignoreGravity = true;
-            orangeOne.setIgnoreGravity(true);
-            ballR.setIgnoreGravity(true);
-            dball.setIgnoreGravity(true);
-            pball.setIgnoreGravity(true);
-            fBall.setIgnoreGravity(true);
-            lBall.setIgnoreGravity(true);
-            pball.setIgnoreGravity(true);
-            pball1.setIgnoreGravity(true);
-            dominoes1.ignoreGravity = true;
-            dominoes2.ignoreGravity = true;
-            dominoes3.ignoreGravity = true;
-            dominoes4.ignoreGravity = true;
-            dominoes5.ignoreGravity = true;
-            plat3.ignoreGravity = true;
+           makeStatic();
 
 
             this.matter.world.setGravity(0,-6);
@@ -258,7 +248,7 @@ function create() {
         if((bodyA.label === "Circle Body" && bodyB.label === "ballVL") || (bodyB.label === "ballVL" && bodyA.label === "Circle Body")) {
             // ball.setVelocityX(-11.5);
             // ball.y = 2314;
-            // zoom(false,true);
+            zoom(false,true);
             console.log("trigger");
         }
         if((bodyA.label === "dominoDirt" && bodyB.label === "domino") || (bodyB.label === "domino" && bodyA.label === "dominoDirt")) {
@@ -271,28 +261,14 @@ function create() {
         if((bodyA.label === "Circle Body" && bodyB.label === "portal") || (bodyB.label === "portal" && bodyA.label === "Circle Body")) {
             //R
             this.matter.world.setGravity(0,5);
+            releaseStatic();
             console.log("woosh");
-            sling.ignoreGravity = false;
-
-            ballR.setIgnoreGravity(false);
-            dball.setIgnoreGravity(false);
-            pball.setIgnoreGravity(false);
-            fBall.setIgnoreGravity(false);
-            lBall.setIgnoreGravity(false);
-            pball.setIgnoreGravity(false);
-            pball1.setIgnoreGravity(false);
-            dominoes1.ignoreGravity = false;
-            dominoes2.ignoreGravity = false;
-            dominoes3.ignoreGravity = false;
-            dominoes4.ignoreGravity = false;
-            dominoes5.ignoreGravity = false;
-            plat3.ignoreGravity = false;
-
-
-
+            this.cameras.main.stopFollow();
+            this.cameras.main.pan(2000, -100, 1000);
+            zoom(false,true,0.5);
             ballJ.setPosition(orangeOne.x,orangeOne.y);
             ballJ.setMass(10).setBounce(.5).setFriction(3).setScale(.18);
-            // zoom(false,true,1.5);
+            // zoom(false,true,.5);
             // this.cameras.main.startFollow(blockB, true);
         }
         if((bodyA.label === "Circle Body" && bodyB.label === "weightDrop") || (bodyB.label === "weightDrop" && bodyA.label === "Circle Body")) {
@@ -302,14 +278,13 @@ function create() {
             cataplult.setAngularVelocity(.15);
             ballJ.setVelocityX(30);
             ballJ.setVelocityY(-30);
-            console.log(pball1);
         }
 
-        if((bodyA.label === "Circle Body" && bodyB.label === "portal1") || (bodyB.label === "portal1" && bodyA.label === "Circle Body")) {
+        if((bodyA.label === "Circle Body" && bodyB.label === "portal1") || (bodyA.label === "portal1" && bodyB.label === "Circle Body")) {
             console.log("ayy");
-            pball1.setPosition(lastP.x,lastP.y);
-            pball1.setMass(10);
-            pball1.setScale(.15);
+            stayStill[5].setPosition(lastP.x,lastP.y);
+            stayStill[5].setMass(10);
+            stayStill[5].setScale(.15);
             //K next portal
             // blockB.setIgnoreGravity(false);
             // blockB.setStatic(false);
@@ -323,9 +298,30 @@ function create() {
             dominoesK[2].setIgnoreGravity(false);
         }
 
-        if((bodyA.label === "ramp" && bodyB.label === "Circle Body") || (bodyB.label === "unlockBlockC" && bodyA.label === "Circle Body")) {
-            console.log("rampblockC");
+        if((bodyA.label === "blockC" && bodyB.label === "Rectangle Body") || (bodyB.label === "blockC" && bodyA.label === "Rectangle Body")) {
+            this.cameras.main.stopFollow();
+            this.cameras.main.pan(blockC.x, blockC.y,500);
+            setTimeout(() => { this.cameras.main.startFollow(blockC, true); }, 250);
+            // console.log("rampblockC");
             blockC.setStatic(false);
+            blockD.setStatic(false);
+        }
+        if((bodyA.label === "pballCam" && bodyB.label === "Circle Body") || (bodyB.label === "pballCam" && bodyA.label === "Circle Body")) {
+            console.log(camC);
+            console.log(pball);
+            if(camC==0) {
+                this.cameras.main.stopFollow();
+                this.cameras.main.pan(stayStill[6].x, stayStill[6].y,1000);
+                setTimeout(() => { this.cameras.main.startFollow(stayStill[6], true); }, 1000);
+
+                camC++;
+            }else if(camC==1){
+                camC++;
+                this.cameras.main.stopFollow();
+                this.cameras.main.pan(stayStill[5].x, stayStill[5].y,700);
+                setTimeout(() => { this.cameras.main.startFollow(stayStill[5], true); }, 400);
+                console.log(stayStill[5]);
+            }
         }
 
     });
@@ -336,20 +332,25 @@ function create() {
 
 
     //floors
-    let ground = this.matter.add.rectangle(1100*units+rXShift,550*units,420*units,20*units,{ isStatic: true});
-    let rSide = this.matter.add.rectangle(1500*units+rXShift,300*units,20*units,700*units,{ isStatic: true});
-    let lSide = this.matter.add.rectangle(850*units+rXShift,900*units,20*units,700*units,{ isStatic: true});
-    let kSide = this.matter.add.rectangle(350*units+rXShift,300*units,20*units,400*units,{ isStatic: true});
-    let mSide = this.matter.add.rectangle(140*units+rXShift,520*units,20*units,400*units,{ isStatic: true});
-    let bSide = this.matter.add.rectangle(1200*units+rXShift,675*units,500*units,20*units,{ isStatic: true});
-    var Body = this.matter.body;
-    Body.rotate(rSide,-3);
-    Body.rotate(lSide,-3);
-    Body.rotate(bSide,3);
-    Body.rotate(kSide,-5);
-    Body.rotate(mSide,5.5);
+    let ground = this.matter.add.image(1100*units+rXShift,550*units,'r').setScale(420*units,20*units).setStatic(true);
+    let rSide = this.matter.add.image(1500*units+rXShift,300*units,'r').setScale(700*units,20*units).setStatic(true);
+    let lSide = this.matter.add.image(850*units+rXShift,900*units,'r').setScale(700*units,20*units).setStatic(true);
+    let kSide = this.matter.add.image(350*units+rXShift,300*units,'r').setScale(400*units,20*units).setStatic(true);
+    let mSide = this.matter.add.image(140*units+rXShift,520*units,'r').setScale(400*units,20*units).setStatic(true);
+    let bSide = this.matter.add.image(1200*units+rXShift,675*units,'r').setScale(20*units,500*units).setStatic(true);
+    rSide.angle+=100;
+    lSide.angle+=100;
+    bSide.angle+=80;
+    kSide.angle-=42;
+    mSide.angle+=42;
+    // var Body = this.matter.body;
+    // Body.rotate(rSide,-3);
+    // Body.rotate(lSide,-3);
+    // Body.rotate(bSide,3);
+    // Body.rotate(kSide,-5);
+    // Body.rotate(mSide,5.5);
 
-
+    var portal1 = this.matter.add.image(2200*units+rXShift,1100*units, 'blueP', null, {isStatic:true, isSensor:true, label:"portal1",}).setScale(.4);
     var orangeOne = this.matter.add.image(400*units+rXShift,10*units,'orangeP',null,{isSensor:true});
     var ballR = this.matter.add.image(370*units+rXShift,600*units,'blockR').setBounce(.5).setFriction(0);
     ballR.setScale(0.09,0.09)
@@ -375,44 +376,37 @@ function create() {
     var dddot = this.matter.add.rectangle(530*units+rXShift,400*units,1,1,{ isStatic: true});
     var dsling = this.matter.add.constraint(pball,dddot,200,0.05);
 
-    var plat = this.matter.add.rectangle(640*units+rXShift,700*units,40,20,{ isStatic: true});
-    var plat2 = this.matter.add.rectangle(760*units+rXShift,1240*units,60,20,{ isStatic: true});
-    plat3 = this.matter.add.rectangle(760*units+rXShift,500*units,5,1000,{ isStatic: false});
-    var dominoes1 = this.matter.add.rectangle(910*units+rXShift,450*units,5,100,{ isStatic: false});
-    var dominoes2 = this.matter.add.rectangle(970*units+rXShift,450*units,5,100,{ isStatic: false});
-    var dominoes3 = this.matter.add.rectangle(1020*units+rXShift,450*units,5,100,{ isStatic: false});
-    var dominoes4 = this.matter.add.rectangle(1070*units+rXShift,450*units,5,100,{ isStatic: false});
-    var dominoes5 = this.matter.add.rectangle(1120*units+rXShift,450*units,20,120,{ isStatic: false});
-    var fBall = this.matter.add.image(1300*units+rXShift,450*units,'blockR').setBounce(.5).setFriction(0);
-    fBall.setScale(0.1,0.1);
-    fBall.setCircle(15);
-    // fBall.setMass(10);
-    lBall = this.matter.add.image(640*units+rXShift,650*units,'blockR').setBounce(.5).setFriction(0);
-    lBall.setScale(0.09,0.09);
+    let plat = this.matter.add.image(640*units+rXShift,700*units,'r').setScale(20,40).setStatic(true);
+    let plat2 = this.matter.add.image(760*units+rXShift,1240*units,'r').setScale(20,60).setStatic(true);
 
-    var plat5 = this.matter.add.rectangle(1300*units+rXShift,900*units,600,20,{ isStatic: false});
+    let plat5 = this.matter.add.image(1300*units+rXShift,900*units,'r').setScale(600,20);
     var pdot = this.matter.add.rectangle(1300*units+rXShift,900*units,1,1,{ isStatic: true});
     var psling = this.matter.add.constraint(plat5,pdot,0,1);
 
-    var plat6 = this.matter.add.rectangle(1800*units+rXShift,800*units,300,20,{ isStatic: false});
+    let plat6 = this.matter.add.image(1800*units+rXShift,800*units,'r').setScale(300,20);
     var pdot6 = this.matter.add.rectangle(1800*units+rXShift,800*units,1,1,{ isStatic: true});
     var psling6 = this.matter.add.constraint(plat6,pdot6,0,1);
 
     var pball = this.matter.add.image(1700*units+rXShift,600*units,'blockR').setBounce(.5).setFriction(0);
     pball.setScale(0.1,0.1);
-    var pdot7 = this.matter.add.rectangle(1700*units+rXShift,400*units,1,1,{ isStatic: true});
+    var pdot7 = this.matter.add.rectangle(1700*units+rXShift,400*units,1.5,1.5,{ isStatic: true});
     var psling7 = this.matter.add.constraint(pball,pdot7,200,1);
 
-    var platform = this.matter.add.rectangle(1800*units+rXShift,700*units,20,20,{ isStatic: true});
-    var pball1 = this.matter.add.image(1800*units+rXShift,650*units,'blockR',null,{label:'pball'}).setBounce(.5).setFriction(0);
-    pball1.setScale(.1);
-    pball1.setCircle(30);
+    let platform = this.matter.add.image(1800*units+rXShift,700*units,'r').setScale(25,20).setStatic(true);
 
-    var balloon = this.matter.add.image(1860*units+rXShift,600*units,'blockR',null,{label:'ramp'});
-    balloon.setIgnoreGravity(true);
-    balloon.setScale(0.09,0.09);
+    stayStill.push(this.matter.add.image(910*units+rXShift,450*units,'g').setScale(5,100));
+    stayStill.push(this.matter.add.image(970*units+rXShift,450*units,'g').setScale(5,100));
+    stayStill.push(this.matter.add.image(1020*units+rXShift,450*units,'g').setScale(5,100));
+    stayStill.push(this.matter.add.image(1070*units+rXShift,450*units,'g').setScale(5,100));
+    stayStill.push(this.matter.add.image(1120*units+rXShift,450*units,'g').setScale(20,120));
+    stayStill.push(this.matter.add.image(1800*units+rXShift,650*units,'blockR').setBounce(.5).setFriction(0).setFrictionAir(.5).setScale(0.15,0.15).setCircle(30));
+    stayStill.push(this.matter.add.image(1300*units+rXShift,450*units,'blockR').setBounce(.5).setFriction(0).setScale(0.1,0.1).setCircle(15));
+    stayStill.push(this.matter.add.image(640*units+rXShift,650*units,'blockR').setBounce(.5).setFriction(0).setScale(0.09,0.09));
+    stayStill.push(this.matter.add.image(760*units+rXShift,500*units,'g').setScale(5,1000));
 
-    this.matter.add.image(2100*units+rXShift,1100*units, 'blueP', null, {isStatic:true, isSensor:true, label:"portal1"}).setScale(.25);
+    // var balloon = this.matter.add.image(1860*units+rXShift,600*units,'blockR',null,{label:'ramp'});
+    // balloon.setIgnoreGravity(true);
+    // balloon.setScale(0.09,0.09);
 
     var lastP =  this.matter.add.image(-200+kXShift,-100+kYShift, 'orangeP', null, {isStatic:true, isSensor:true, label:"portal2"}).setScale(.25);
     //Kaustubha
@@ -440,17 +434,17 @@ function create() {
 
 
 
-
-
-    var rStatic = false;
-    function rToggleStatic() {
-        if(rStatic) {
-
-        }else {
-
-
-        }
+}
+function makeStatic(){
+    for (i = 0; i<stayStill.length; i++){
+        stayStill[i].setIgnoreGravity(true);
     }
+}
+function releaseStatic(){
+    for (i = 0; i<stayStill.length; i++){
+        stayStill[i].setIgnoreGravity(false);
+    }
+    return;
 }
 
 
