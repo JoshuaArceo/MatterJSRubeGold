@@ -34,7 +34,7 @@
         }
     };
 
-    let units = innerWidth/2560;
+    let units = 1920/2560;
 
     var game = new Phaser.Game(config);
 
@@ -109,7 +109,7 @@
 
         let plat6 = this.matter.add.rectangle(1800*units,800*units,300,20,{ isStatic: false});
         let pdot6 = this.matter.add.rectangle(1800*units,800*units,1,1,{ isStatic: true});
-        let psling6 = this.matter.add.constraint(plat6,pdot6,0,1);
+        let psling6 = this.matter.add.constraint(plat6,pdot6,0,1);89-65
 
         var pball = this.matter.add.image(1700*units,600*units,'block').setBounce(.5).setFriction(0);
         pball.setScale(0.09,0.09);

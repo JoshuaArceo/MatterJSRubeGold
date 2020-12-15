@@ -44,13 +44,16 @@ function create ()
     var ramp = this.matter.add.image(900, 500, 'platform', null, { isStatic: true, width: 1 }).setScale(1, 0.5).setAngle(13);
     var blockC = this.matter.add.image(709, 395, 'block',null, {isStatic:true}).setMass(2).setAngle(13);
     var blockD = this.matter.add.image(1100, 460, 'block',null, {isStatic:true}).setMass(2).setAngle(13);
-    var string =     this.matter.add.image(1200, 230, 'tube', null, { width:0.5}).setScale(0.1, 5);
+    var string =     this.matter.add.image(1100, 300, 'tube', null, {  width:0.5}).setScale(0.1, 0.65).setFixedRotation(true).setAngle(15);
     var x= 1190;
     still.setFixedRotation();
+    // string.setFixedRotation();
+    this.matter.add.joint(still, string);
     this.matter.add.joint(still, blockD);
     // this.matter.add.joint(string, blockD);
+
     setInterval(function(){
-        if(ss.x>362||ss.x<361 && ss.y<480){
+        if(ss.x>362||ss.x<361 && ss.y<500){
             blockC.setStatic(false);
         }
         if(blockC.x>=939.8){
@@ -61,6 +64,7 @@ function create ()
         this.matter.add.image(x, 600, 'domino').setScale(0.5, 1.9);
         x=x+10;
     }
+
 
 
 }
