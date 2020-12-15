@@ -22,12 +22,11 @@ var config = {
 };
 
 var game = new Phaser.Game(config);
-let scaleU = 1;
 var inpsK, inpsM;
 var ball;
 var zoomInTimer, zoomOutTimer;
-let xShift = 300*scaleU;
-let yShift = 0*scaleU;
+let xShift = 300;
+let yShift = 0;
 
 function preload() {
     this.load.image('ball','resources/sprites/ball.png');
@@ -48,6 +47,7 @@ var cCap =999;
 
 function create() {
 
+    this.matter.world.engine.timing.timeScale = .75;
 
     zoomInTimer = this.time.addEvent({
         delay: 10,
@@ -74,7 +74,7 @@ function create() {
     inpsK = this.input.keyboard.createCursorKeys();
     inpsM = this.input.activePointer;
 
-    ball = this.matter.add.image(scaleU*1+xShift, scaleU*0+yShift, 'ball');
+    ball = this.matter.add.image(1+xShift, yShift, 'ball');
     ball.setCircle();
     ball.setFrictionAir(0.05)
     // ball.setFriction(0.05);
@@ -85,65 +85,65 @@ function create() {
     this.cameras.main.startFollow(ball, true);
 
     //triggers
-    this.matter.add.rectangle(scaleU*150+xShift,scaleU*450+yShift,10,50,{isStatic:true, isSensor:true, label:"detectionOne"});
-    this.matter.add.rectangle(scaleU*200+xShift,scaleU*760+yShift,80,10,{isStatic:true, isSensor:true, label:"gravUp"});
-    this.matter.add.rectangle(scaleU*380+xShift,scaleU*280+yShift,10,50,{isStatic:true, isSensor:true, label:"gravDown"});
-    this.matter.add.rectangle(scaleU*200+xShift,scaleU*900+yShift,10,50,{isStatic:true, isSensor:true, label:"ballVL"});
-    this.matter.add.rectangle(scaleU*-170+xShift,scaleU*930+yShift,10,50,{isStatic:true, isSensor:true, label:"dominoDirt"});
-    this.matter.add.rectangle(scaleU*20+xShift,scaleU*1200+yShift,10,50,{isStatic:true, isSensor:true, label:"weightDrop"});
+    this.matter.add.rectangle(150+xShift,450+yShift,10,50,{isStatic:true, isSensor:true, label:"detectionOne"});
+    this.matter.add.rectangle(200+xShift,760+yShift,80,10,{isStatic:true, isSensor:true, label:"gravUp"});
+    this.matter.add.rectangle(380+xShift,280+yShift,10,50,{isStatic:true, isSensor:true, label:"gravDown"});
+    this.matter.add.rectangle(200+xShift,900+yShift,10,50,{isStatic:true, isSensor:true, label:"ballVL"});
+    this.matter.add.rectangle(-170+xShift,930+yShift,10,50,{isStatic:true, isSensor:true, label:"dominoDirt"});
+    this.matter.add.rectangle(20+xShift,1200+yShift,10,50,{isStatic:true, isSensor:true, label:"weightDrop"});
     //plats
 
     //starting ramps
-    this.matter.add.image(scaleU*250+xShift,scaleU*300+yShift, 'dirtLong', null, {angle:'-.3', isStatic:true,});
-    this.matter.add.image(scaleU*0+xShift,scaleU*100+yShift, 'dirtLong', null, {angle:'.349', isStatic:true,});
-    this.matter.add.image(scaleU*10+xShift,scaleU*450+yShift, 'dirtLong', null, {angle:'.3', isStatic:true,});
+    this.matter.add.image(250+xShift,300+yShift, 'dirtLong', null, {angle:'-.3', isStatic:true,});
+    this.matter.add.image(xShift,100+yShift, 'dirtLong', null, {angle:'.349', isStatic:true,});
+    this.matter.add.image(10+xShift,450+yShift, 'dirtLong', null, {angle:'.3', isStatic:true,});
 
     //drop to spring||grav
     var yPos = 550
     for(i=0;i<3;i++){
-        this.matter.add.image(scaleU*160+xShift,scaleU*yPos+yShift, 'dirtV',null, {angle:'0', isStatic:true,});
-        this.matter.add.image(scaleU*250+xShift,scaleU*yPos+yShift, 'dirtV',null, {angle:'0', isStatic:true,});
+        this.matter.add.image(160+xShift,yPos+yShift, 'dirtV',null, {angle:'0', isStatic:true,});
+        this.matter.add.image(250+xShift,yPos+yShift, 'dirtV',null, {angle:'0', isStatic:true,});
         yPos+=44;
     }
     for(i=0;i<3;i++){
-        this.matter.add.image(scaleU*160+xShift,scaleU*yPos+yShift, 'stoneV',null, {angle:'0', isStatic:true,});
-        this.matter.add.image(scaleU*250+xShift,scaleU*yPos+yShift, 'stoneV',null, {angle:'0', isStatic:true,});
+        this.matter.add.image(160+xShift,yPos+yShift, 'stoneV',null, {angle:'0', isStatic:true,});
+        this.matter.add.image(250+xShift,yPos+yShift, 'stoneV',null, {angle:'0', isStatic:true,});
         yPos+=44;
     }
     var xPos = 180;
     for(i=0;i<2;i++) {
-        this.matter.add.image(scaleU * xPos + xShift, scaleU * 788 + yShift, 'stone', null, {isStatic: true});
+        this.matter.add.image(xPos + xShift, 788 + yShift, 'stone', null, {isStatic: true});
         xPos+=42;
     }
 
 
 
     //drop to dominoes
-    this.matter.add.image(scaleU*325+xShift,scaleU*860+yShift, 'dirtLong', null, {angle:'-.349', isStatic:true,});
-    var killMe = this.matter.add.image(scaleU*100+xShift,scaleU*1000+yShift, 'dirt',null, {angle:'0', isStatic:true, label:"killMe"});
-    this.matter.add.image(scaleU*160+xShift,scaleU*1000+yShift, 'stone',null, {angle:'0', isStatic:true});
+    this.matter.add.image(325+xShift,860+yShift, 'dirtLong', null, {angle:'-.349', isStatic:true,});
+    var killMe = this.matter.add.image(100+xShift,1000+yShift, 'dirt',null, {angle:'0', isStatic:true, label:"killMe"});
+    this.matter.add.image(160+xShift,1000+yShift, 'stone',null, {angle:'0', isStatic:true});
 
     //dominoes and their plats
     var dominoes =[];
-    dominoes.push(this.matter.add.image(scaleU*158+xShift,scaleU*955+yShift, 'domino',null, {label:"domino"}).setMass(3));
-    dominoes.push(this.matter.add.image(scaleU*55+xShift,scaleU*945+yShift, 'domino',null, {label:"domino"}).setMass(3));
-    dominoes.push(this.matter.add.image(scaleU*0+xShift,scaleU*945+yShift, 'domino',null, {label:"domino"}).setMass(3));
-    dominoes.push(this.matter.add.image(scaleU*-45+xShift,scaleU*945+yShift, 'domino',null, {label:"domino"}).setMass(3));
-    dominoes.push(this.matter.add.image(scaleU*-90+xShift,scaleU*945+yShift, 'domino',null, {label:"domino"}).setMass(3));
+    dominoes.push(this.matter.add.image(158+xShift,955+yShift, 'domino',null, {label:"domino"}).setMass(3));
+    dominoes.push(this.matter.add.image(55+xShift,945+yShift, 'domino',null, {label:"domino"}).setMass(3));
+    dominoes.push(this.matter.add.image(xShift,945+yShift, 'domino',null, {label:"domino"}).setMass(3));
+    dominoes.push(this.matter.add.image(-45+xShift,945+yShift, 'domino',null, {label:"domino"}).setMass(3));
+    dominoes.push(this.matter.add.image(-90+xShift,945+yShift, 'domino',null, {label:"domino"}).setMass(3));
 
-    this.matter.add.image(scaleU*-80+xShift,scaleU*990+yShift, 'stoneLong', null, {angle:'0', isStatic:true,});
+    this.matter.add.image(-80+xShift,990+yShift, 'stoneLong', null, {angle:'0', isStatic:true,});
 
     //TODO catapult/launch
     //https://github.com/liabru/matter-js/blob/master/examples/catapult.js
 
 
-    var cataplult = this.matter.add.image(scaleU*165+xShift, scaleU*1400+yShift, 'stoneLong', null, { isStatic: false,  label:"catapult" });
-    this.matter.add.image(scaleU*80+xShift, scaleU*1250+yShift, 'stoneV', null, { isStatic: true,});
-    this.matter.add.image(scaleU*10+xShift, scaleU*1190+yShift, 'stoneV', null, { isStatic: true,});
-    // var anch = this.matter.add.image(scaleU*165+xShift, scaleU*1200+yShift, 'stoneV', null, { isStatic: true,});
-    var anch = this.matter.add.polygon(scaleU*165+xShift, scaleU*1200+yShift, 3, 1, {angle: 1.5708, isStatic: true, render: { fillStyle: '#224242'}});
-    var point = this.matter.add.constraint(cataplult, anch,.0,.8);
-    var weight = this.matter.add.image(scaleU*40+xShift, scaleU*1300+yShift, 'weight').setStatic(true);
+    var cataplult = this.matter.add.image(165+xShift, 1400+yShift, 'stoneLong', null, { isStatic: false,  label:"catapult" });
+    this.matter.add.image(80+xShift, 1250+yShift, 'stoneV', null, { isStatic: true,});
+    this.matter.add.image(10+xShift, 1190+yShift, 'stoneV', null, { isStatic: true,});
+    // var anch = this.matter.add.image(165+xShift, 1200+yShift, 'stoneV', null, { isStatic: true,});
+    var anch = this.matter.add.polygon(165+xShift, 1200+yShift, 3, 1, {angle: 1.5708, isStatic: true, render: { fillStyle: '#224242'}});
+    this.matter.add.constraint(cataplult, anch,.0,.8);
+    var weight = this.matter.add.image(40+xShift, 1300+yShift, 'weight').setStatic(true);
 
     /*@deprecated
     //TODO drop to gear? //TODO gear?
@@ -156,17 +156,17 @@ function create() {
     */
 
     //TODO end
-    this.matter.add.image(scaleU*500+xShift,scaleU*1400+yShift, 'blueP', null, {isStatic:true, isSensor:true, label:"portal"}).setScale(.25);
+    this.matter.add.image(500+xShift,1400+yShift, 'blueP', null, {isStatic:true, isSensor:true, label:"portal"}).setScale(.25);
 
 
 
     this.matter.world.on("collisionstart", (event, bodyA, bodyB) => {
         console.log(bodyA.label + ", " + bodyB.label);
-        if((bodyA.label == "Circle Body" && bodyB.label == "detectionOne") || (bodyB.label == "detectionOne" && bodyA.label == "Circle Body")) {
+        if((bodyA.label === "Circle Body" && bodyB.label === "detectionOne") || (bodyB.label === "detectionOne" && bodyA.label === "Circle Body")) {
 
             zoom(false,true);
         }
-        if((bodyA.label == "Circle Body" && bodyB.label == "gravUp") || (bodyB.label == "gravUp" && bodyA.label == "Circle Body")) {
+        if((bodyA.label === "Circle Body" && bodyB.label === "gravUp") || (bodyB.label === "gravUp" && bodyA.label === "Circle Body")) {
             //TODO ignore grav for objects
             cataplult.setIgnoreGravity(true);
             // anch.setIgnoreGravity(true);
@@ -176,7 +176,7 @@ function create() {
 
             this.matter.world.setGravity(0,-6);
         }
-        if((bodyA.label == "Circle Body" && bodyB.label == "gravDown") || (bodyB.label == "gravDown" && bodyA.label == "Circle Body")) {
+        if((bodyA.label === "Circle Body" && bodyB.label === "gravDown") || (bodyB.label === "gravDown" && bodyA.label === "Circle Body")) {
             // console.log("jeet");
             //TODO unignore grav for objects
             this.matter.world.setGravity(0,7);
@@ -187,29 +187,29 @@ function create() {
             }
             zoom(true,true);
         }
-        if((bodyA.label == "Circle Body" && bodyB.label == "ballVL") || (bodyB.label == "ballVL" && bodyA.label == "Circle Body")) {
+        if((bodyA.label === "Circle Body" && bodyB.label === "ballVL") || (bodyB.label === "ballVL" && bodyA.label === "Circle Body")) {
             // ball.setVelocityX(-11.5);
             // ball.y = 2314;
             zoom(false,true);
             console.log("trigger");
         }
-        if((bodyA.label == "dominoDirt" && bodyB.label == "domino") || (bodyB.label == "domino" && bodyA.label == "dominoDirt")) {
+        if((bodyA.label === "dominoDirt" && bodyB.label === "domino") || (bodyB.label === "domino" && bodyA.label === "dominoDirt")) {
             console.log("kill");
             killMe.destroy();
             dominoes[0].destroy();
             dominoes[1].destroy();
             ball.setAngularVelocity(-1);
         }
-        if((bodyA.label == "Circle Body" && bodyB.label == "portal") || (bodyB.label == "portal" && bodyA.label == "Circle Body")) {
+        if((bodyA.label === "Circle Body" && bodyB.label === "portal") || (bodyB.label === "portal" && bodyA.label === "Circle Body")) {
             //TODO portal tp to next point/map
             // ball.setPosition(12,43);
             //@deprecated
             // this.cameras.main.stopFollow();
             // ball.destroy();
-            // ball = this.matter.add.image(scaleU*100+xShift, scaleU*100+yShift, 'ball');
+            // ball = this.matter.add.image(100+xShift, 100+yShift, 'ball');
 
         }
-        if((bodyA.label == "Circle Body" && bodyB.label == "weightDrop") || (bodyB.label == "weightDrop" && bodyA.label == "Circle Body")) {
+        if((bodyA.label === "Circle Body" && bodyB.label === "weightDrop") || (bodyB.label === "weightDrop" && bodyA.label === "Circle Body")) {
             weight.setStatic(false);
             weight.setVelocityY(-30);
             //Catapults do not function as they do in native matter; these are added to artificially launch
@@ -235,7 +235,7 @@ function zoom(zoomIn, startTime, cap=999) {
         zoomOutTimer.paused = false;
     }
 
-    if(cap!=999) {
+    if(cap!==999) {
         if (zoomIn) {
             console.log("zoom, incap");
             if (zoomN <= cap) {
@@ -274,6 +274,15 @@ function zoom(zoomIn, startTime, cap=999) {
 }
 
 function update() {
+
+    //artificial slo mo, lags system, buggy, may break game
+    // this.r = 0;
+    // this.wasteTime = .25;
+    // for(var i = 0; i < this.wasteTime * 500000; i++)
+    // {
+    //     var a = Math.sqrt(i);
+    //     this.r += a * a;
+    // }
     this.cameras.main.setZoom(zoomN);
     if (inpsK.up.isDown){
         this.cameras.main.startFollow(ball, true);
