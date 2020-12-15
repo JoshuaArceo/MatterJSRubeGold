@@ -3,7 +3,7 @@ var config = {
     width: 1200,
     height: 900,
     parent: 'game',
-    backgroundColor:'grey',
+    backgroundColor:'#2143ff',
     scene: {
         preload: preload,
         create: create,
@@ -38,6 +38,7 @@ function preload() {
     this.load.image('stoneLong','resources/sprites/stoneLong.png');
     this.load.image('stoneV','resources/sprites/stoneV.png');
     this.load.image('domino','resources/sprites/domino.png');
+    this.load.image('weight','resources/sprites/weight.png');
     this.load.image('blueP','resources/portalSprites/Blue.png');
     // this.load.json('ballS','resources/sprite_data/ball.json');
 }
@@ -62,7 +63,7 @@ function create() {
     });
     zoomOutTimer.paused=true;
 
-    this.matter.world.setBounds(0, 0, 1200, 1500, 32, true, true, false, true);
+    this.matter.world.setBounds(0, 0, 1200, 1800, 32, true, true, false, true);
 
     // this.matter.world.setGravity(0,9.8);
     // this.matter.world.getGravityY();
@@ -89,6 +90,7 @@ function create() {
     this.matter.add.rectangle(scaleU*380+xShift,scaleU*280+yShift,10,50,{isStatic:true, isSensor:true, label:"gravDown"});
     this.matter.add.rectangle(scaleU*200+xShift,scaleU*900+yShift,10,50,{isStatic:true, isSensor:true, label:"ballVL"});
     this.matter.add.rectangle(scaleU*-170+xShift,scaleU*930+yShift,10,50,{isStatic:true, isSensor:true, label:"dominoDirt"});
+    this.matter.add.rectangle(scaleU*20+xShift,scaleU*1200+yShift,10,50,{isStatic:true, isSensor:true, label:"weightDrop"});
     //plats
 
     //starting ramps
@@ -129,39 +131,45 @@ function create() {
     dominoes.push(this.matter.add.image(scaleU*-45+xShift,scaleU*945+yShift, 'domino',null, {label:"domino"}).setMass(3));
     dominoes.push(this.matter.add.image(scaleU*-90+xShift,scaleU*945+yShift, 'domino',null, {label:"domino"}).setMass(3));
 
-
-
     this.matter.add.image(scaleU*-80+xShift,scaleU*990+yShift, 'stoneLong', null, {angle:'0', isStatic:true,});
 
-    //TODO
-    //catapult/launch
-
-    //TODO
-    //drop to gear
-
-    //TODO
-    //gear
-
-    //TODO
-    //ramp to pulley
-
-    //TODO
-    //pulley
-
-    //TODO
-    //end
-    //ONLY TEMP
-  this.matter.add.image(scaleU*100+xShift,scaleU*1400+yShift, 'blueP', null, {isStatic:true, isSensor:true}).setScale(.25);
+    //TODO catapult/launch
+    //https://github.com/liabru/matter-js/blob/master/examples/catapult.js
 
 
+    var cataplult = this.matter.add.image(scaleU*165+xShift, scaleU*1400+yShift, 'stoneLong', null, { isStatic: false,  label:"catapult" });
+    this.matter.add.image(scaleU*80+xShift, scaleU*1250+yShift, 'stoneV', null, { isStatic: true,});
+    this.matter.add.image(scaleU*10+xShift, scaleU*1190+yShift, 'stoneV', null, { isStatic: true,});
+    // var anch = this.matter.add.image(scaleU*165+xShift, scaleU*1200+yShift, 'stoneV', null, { isStatic: true,});
+    var anch = this.matter.add.polygon(scaleU*165+xShift, scaleU*1200+yShift, 3, 1, {angle: 1.5708, isStatic: true, render: { fillStyle: '#224242'}});
+    var point = this.matter.add.constraint(cataplult, anch,.0,.8);
+    var weight = this.matter.add.image(scaleU*40+xShift, scaleU*1300+yShift, 'weight').setStatic(true);
 
-    this.matter.world.on("collisionstart", (event, bodyA, bodyB, bodyC) => {
+    /*@deprecated
+    //TODO drop to gear? //TODO gear?
+    //spinning circle with rectangles attached???
+
+
+    //TODO ramp to pulley//TODO pulley
+    //chain with plat attached, weight pulls down won sensor activation
+    //https://github.com/liabru/matter-js/blob/master/examples/chains.js
+    */
+
+    //TODO end
+    this.matter.add.image(scaleU*500+xShift,scaleU*1400+yShift, 'blueP', null, {isStatic:true, isSensor:true, label:"portal"}).setScale(.25);
+
+
+
+    this.matter.world.on("collisionstart", (event, bodyA, bodyB) => {
         console.log(bodyA.label + ", " + bodyB.label);
         if((bodyA.label == "Circle Body" && bodyB.label == "detectionOne") || (bodyB.label == "detectionOne" && bodyA.label == "Circle Body")) {
 
             zoom(false,true);
         }
         if((bodyA.label == "Circle Body" && bodyB.label == "gravUp") || (bodyB.label == "gravUp" && bodyA.label == "Circle Body")) {
+            //TODO ignore grav for objects
+            cataplult.setIgnoreGravity(true);
+            // anch.setIgnoreGravity(true);
             for (i = 0; i<dominoes.length; i++){
                 dominoes[i].setIgnoreGravity(true);
             }
@@ -169,22 +177,47 @@ function create() {
             this.matter.world.setGravity(0,-6);
         }
         if((bodyA.label == "Circle Body" && bodyB.label == "gravDown") || (bodyB.label == "gravDown" && bodyA.label == "Circle Body")) {
+            // console.log("jeet");
+            //TODO unignore grav for objects
             this.matter.world.setGravity(0,7);
             for (i = 0; i<dominoes.length; i++){
                 dominoes[i].setIgnoreGravity(false);
+                cataplult.setIgnoreGravity(false);
+                // anch.setIgnoreGravity(false);
             }
             zoom(true,true);
         }
         if((bodyA.label == "Circle Body" && bodyB.label == "ballVL") || (bodyB.label == "ballVL" && bodyA.label == "Circle Body")) {
             // ball.setVelocityX(-11.5);
+            // ball.y = 2314;
             zoom(false,true);
             console.log("trigger");
         }
         if((bodyA.label == "dominoDirt" && bodyB.label == "domino") || (bodyB.label == "domino" && bodyA.label == "dominoDirt")) {
             console.log("kill");
             killMe.destroy();
-            dominoes[0].setVelocityX(-10);
+            dominoes[0].destroy();
+            dominoes[1].destroy();
             ball.setAngularVelocity(-1);
+        }
+        if((bodyA.label == "Circle Body" && bodyB.label == "portal") || (bodyB.label == "portal" && bodyA.label == "Circle Body")) {
+            //TODO portal tp to next point/map
+            // ball.setPosition(12,43);
+            //@deprecated
+            // this.cameras.main.stopFollow();
+            // ball.destroy();
+            // ball = this.matter.add.image(scaleU*100+xShift, scaleU*100+yShift, 'ball');
+
+        }
+        if((bodyA.label == "Circle Body" && bodyB.label == "weightDrop") || (bodyB.label == "weightDrop" && bodyA.label == "Circle Body")) {
+            weight.setStatic(false);
+            weight.setVelocityY(-30);
+            //Catapults do not function as they do in native matter; these are added to artificially launch
+            cataplult.setAngularVelocity(.15);
+            ball.setVelocityX(30);
+            ball.setVelocityY(-30);
+
+
         }
     });
 
@@ -255,12 +288,9 @@ function update() {
         }
     }
     if(inpsM.isDown) {
-        console.log('X:' + inpsM.x);
+        console.log(ball.x);
+        // console.log('X:' + inpsM.x);
 
-        console.log('Y:' + inpsM.y);
+        // console.log('Y:' + inpsM.y);
     }
 }
-
-
-
-

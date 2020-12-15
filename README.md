@@ -1,2 +1,0 @@
-"# MatterJSRubeGold" 
-DO NOT EDIT

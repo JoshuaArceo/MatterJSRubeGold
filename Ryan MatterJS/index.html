@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="//cdn.jsdelivr.net/npm/phaser@3.24.1/dist/phaser.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/phaser@3.24.1/dist/phaser-matter-collision-plugin"></script>
+
+</head>
+<body>
+<script>
+    var config = {
+        type: Phaser.AUTO,
+        width: innerWidth,
+        height: innerHeight,
+        physics: {
+            default: 'matter',
+            matter: {
+                enableSleeping: true,
+                gravity: {
+                    y: 1
+                },
+                debug: {
+                    showBody: true,
+                    showStaticBody: true
+                }
+            }
+        },
+
+        scene: {
+            preload: preload,
+            create: create,
+            // update: update,
+        }
+    };
+
+    let units = innerWidth/2560;
+
+    var game = new Phaser.Game(config);
+
+    function preload ()
+    {
+        this.load.image('block','resources/marble.png')
+    }
+    var lBall;
+    var plat3=this.matter;
+    function create ()
+    {
+        //essentials
+        this.matter.add.mouseSpring();
+
+
+        //floors
+        let ground = this.matter.add.rectangle(1100*units,550*units,420*units,20*units,{ isStatic: true});
+        let rSide = this.matter.add.rectangle(1500*units,300*units,20*units,700*units,{ isStatic: true});
+        let lSide = this.matter.add.rectangle(850*units,900*units,20*units,700*units,{ isStatic: true});
+        let kSide = this.matter.add.rectangle(350*units,300*units,20*units,400*units,{ isStatic: true});
+        let mSide = this.matter.add.rectangle(140*units,520*units,20*units,400*units,{ isStatic: true});
+        let bSide = this.matter.add.rectangle(1200*units,675*units,500*units,20*units,{ isStatic: true});
+        var Body = this.matter.body;
+        Body.rotate(rSide,-3);
+        Body.rotate(lSide,-3);
+        Body.rotate(bSide,3);
+        Body.rotate(kSide,-5);
+        Body.rotate(mSide,5.5);
+
+
+        var cBall = this.matter.add.image(400*units,10*units,'block').setBounce(.5).setFriction(3);
+        var ball = this.matter.add.image(370*units,600*units,'block').setBounce(.5).setFriction(0);
+        ball.setScale(0.09,0.09)
+        ball.setCircle(26);
+        cBall.setScale(0.09,0.09);
+        cBall.setCircle(26);
+        cBall.setMass(10)
+        // ball1.setVelocityX(5);
+        // this.matter.add.rectangle(100*units,550*units,420*units,20*units,{ isStatic: true});
+
+        var dball = this.matter.add.image(450*units,600*units,'block').setBounce(.5).setFriction(0);
+        dball.setScale(0.09,0.09);
+        var pball = this.matter.add.image(530*units,600*units,'block').setBounce(.5).setFriction(0);
+        pball.setScale(0.09,0.09);
+        dball.setCircle(26);
+        pball.setCircle(26);
+        //slings
+        let dot = this.matter.add.rectangle(370*units,400*units,1,1,{ isStatic: true});
+        let ddot = this.matter.add.rectangle(450*units,400*units,1,1,{ isStatic: true});
+        let sling = this.matter.add.constraint(ball,dot,200,0.05);
+        let sling2 = this.matter.add.constraint(dball,ddot,200,0.05);
+        let dddot = this.matter.add.rectangle(530*units,400*units,1,1,{ isStatic: true});
+        let dsling = this.matter.add.constraint(pball,dddot,200,0.05);
+
+        let plat = this.matter.add.rectangle(640*units,700*units,40,20,{ isStatic: true});
+        let plat2 = this.matter.add.rectangle(760*units,1240*units,60,20,{ isStatic: true});
+        plat3 = this.matter.add.rectangle(760*units,500*units,5,1000,{ isStatic: false});
+        let dominoes1 = this.matter.add.rectangle(910*units,450*units,5,100,{ isStatic: false});
+        let dominoes2 = this.matter.add.rectangle(970*units,450*units,5,100,{ isStatic: false});
+        let dominoes3 = this.matter.add.rectangle(1020*units,450*units,5,100,{ isStatic: false});
+        let dominoes4 = this.matter.add.rectangle(1070*units,450*units,5,100,{ isStatic: false});
+        let dominoes5 = this.matter.add.rectangle(1120*units,450*units,20,120,{ isStatic: false});
+        var fBall = this.matter.add.image(1300*units,450*units,'block').setBounce(.5).setFriction(0);
+        fBall.setScale(0.05,0.05);
+        fBall.setCircle(15);
+        lBall = this.matter.add.image(640*units,650*units,'block').setBounce(.5).setFriction(0);
+        lBall.setScale(0.09,0.09);
+
+        let plat5 = this.matter.add.rectangle(1300*units,900*units,600,20,{ isStatic: false});
+        let pdot = this.matter.add.rectangle(1300*units,900*units,1,1,{ isStatic: true});
+        let psling = this.matter.add.constraint(plat5,pdot,0,1);
+
+        let plat6 = this.matter.add.rectangle(1800*units,800*units,300,20,{ isStatic: false});
+        let pdot6 = this.matter.add.rectangle(1800*units,800*units,1,1,{ isStatic: true});
+        let psling6 = this.matter.add.constraint(plat6,pdot6,0,1);
+
+        var pball = this.matter.add.image(1700*units,600*units,'block').setBounce(.5).setFriction(0);
+        pball.setScale(0.09,0.09);
+        let pdot7 = this.matter.add.rectangle(1700*units,400*units,1,1,{ isStatic: true});
+        let psling7 = this.matter.add.constraint(pball,pdot7,200,1);
+
+        let platform = this.matter.add.rectangle(1800*units,700*units,50,20,{ isStatic: true});
+        var pball1 = this.matter.add.image(1800*units,650*units,'block').setBounce(.5).setFriction(0);
+        pball1.setScale(0.09,0.09);
+        pball1.setCircle(30);
+
+        var balloon = this.matter.add.image(1900*units,600*units,'block');
+        balloon.setIgnoreGravity(true);
+        balloon.setScale(0.09,0.09);
+    }
+
+    // function update() {
+    //     if (lBall.x==570.569271660751){
+    //         alert(lBall.x);
+    //         lBall.setVelocityY(2);
+    //
+    //     }
+    // }
+
+</script>
+</body>
+</html>
