@@ -65,6 +65,16 @@ function create ()
         x=x+10;
     }
 
-
+    function setFalse(){
+        blockB.setStatic(false);
+        ss.setStatic(false);
+        blockC.setStatic(false);
+        domino1.setStatic(false);
+        domino2.setStatic(false);
+        domino3.setStatic(false);
+    }
 
 }
+
+
+
